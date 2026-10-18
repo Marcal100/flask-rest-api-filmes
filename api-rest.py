@@ -25,13 +25,13 @@ filmes = [
 ]
 
 
-# Listar todos os filmes
+
 @app.route("/filmes", methods=["GET"])
 def listar_filmes():
     return jsonify(filmes), 200
 
 
-# Consultar filme por ID
+
 @app.route("/filmes/<int:id>", methods=["GET"])
 def consultar_filme(id):
     for filme in filmes:
@@ -41,7 +41,7 @@ def consultar_filme(id):
     return jsonify({"erro": "Filme nao encontrado"}), 404
 
 
-# Cadastrar filme
+
 @app.route("/filmes", methods=["POST"])
 def cadastrar_filme():
     dados = request.get_json(silent=True)
@@ -86,7 +86,6 @@ def cadastrar_filme():
     return jsonify(novo_filme), 201
 
 
-# Atualizar filme
 @app.route("/filmes/<int:id>", methods=["PUT"])
 def atualizar_filme(id):
     dados = request.get_json(silent=True)
@@ -125,7 +124,7 @@ def atualizar_filme(id):
     return jsonify({"erro": "Filme nao encontrado"}), 404
 
 
-# Excluir filme
+
 @app.route("/filmes/<int:id>", methods=["DELETE"])
 def excluir_filme(id):
     for indice, filme in enumerate(filmes):
