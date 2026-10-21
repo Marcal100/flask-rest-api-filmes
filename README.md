@@ -1,53 +1,79 @@
-# API REST de Filmes
+# Laboratório de Segurança em API REST com Flask
 
-API REST desenvolvida em Python com Flask para praticar desenvolvimento backend, criação de endpoints HTTP e manipulação de dados em JSON.
+## Sobre o projeto
 
-## Funcionalidades
+Este projeto demonstra a análise e o aprimoramento da segurança de uma API REST desenvolvida com Python e Flask. O laboratório foi realizado em ambiente local, utilizando o Postman para testar os endpoints e validar as respostas HTTP.
 
-- Listar todos os filmes.
-- Consultar um filme pelo ID.
-- Cadastrar filmes.
-- Atualizar filmes.
-- Excluir filmes.
-- Validar os dados recebidos nas requisições.
+## Objetivos
 
-## Tecnologias
+- Implementar operações CRUD para gerenciamento de filmes.
+- Validar os dados recebidos pela API.
+- Identificar riscos relacionados à ausência de autenticação.
+- Implementar proteção por chave de API nas operações de escrita.
+- Validar o comportamento da aplicação por meio de testes HTTP.
+
+## Tecnologias utilizadas
 
 - Python
 - Flask
-- REST API
-- JSON
+- API REST
 - Postman
-
-## Como executar
-
-1. Clone ou baixe o repositório.
-2. Instale as dependências:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Execute o arquivo Python principal:
-
-   ```bash
-   python api-rest.py
-   ```
-
-4. Acesse a API em `http://127.0.0.1:5000`.
-
-> Se o arquivo principal tiver outro nome, substitua `api-rest.py` pelo nome correto.
+- Git e GitHub
 
 ## Endpoints
 
-| Método | Endpoint | Descrição |
-|---|---|---|
-| GET | `/filmes` | Lista todos os filmes |
-| GET | `/filmes/<id>` | Consulta um filme |
-| POST | `/filmes` | Cadastra um filme |
-| PUT | `/filmes/<id>` | Atualiza um filme |
-| DELETE | `/filmes/<id>` | Exclui um filme |
+| Método | Endpoint | Descrição | Proteção |
+|---|---|---|---|
+| GET | `/filmes` | Lista os filmes | Pública no laboratório |
+| GET | `/filmes/<id>` | Consulta um filme | Pública no laboratório |
+| POST | `/filmes` | Cadastra um filme | Chave de API |
+| PUT | `/filmes/<id>` | Atualiza um filme | Chave de API |
+| DELETE | `/filmes/<id>` | Exclui um filme | Chave de API |
 
-## Observação
+## Análise de segurança
 
-Os dados são armazenados em memória e são reiniciados quando a aplicação é encerrada. Esta versão não utiliza banco de dados.
+Durante os testes, foi identificada a ausência de autenticação nas operações de cadastro, atualização e exclusão. Inicialmente, foi possível executar uma exclusão sem fornecer credenciais.
+
+Como medida de mitigação, foi implementado um decorador Flask que verifica a presença de uma chave de API no cabeçalho `X-API-Key`.
+
+Requisições sem uma chave válida são rejeitadas com HTTP 401. Requisições autorizadas podem prosseguir para a lógica da rota, que então valida os dados e executa a operação solicitada.
+
+## Evidências de testes
+
+| Cenário | Resultado esperado |
+|---|---|
+| Exclusão sem chave de API | HTTP 401 Unauthorized |
+| Exclusão com chave válida | HTTP 200 OK |
+| Cadastro com dados válidos e chave válida | HTTP 201 Created |
+| Atualização com dados válidos e chave válida | HTTP 200 OK |
+| Cadastro com ano enviado como texto | HTTP 400 Bad Request |
+
+## Execução local
+
+1. Instale o Python.
+2. Crie e ative um ambiente virtual.
+3. Instale as dependências:
+
+```bash
+pip install -r requirements.txt
+```
+
+4. Configure a variável de ambiente `API_KEY` com uma chave de laboratório.
+5. Execute a aplicação:
+
+```bash
+python api-rest.py
+```
+
+A API ficará disponível localmente em `http://127.0.0.1:5000`.
+
+## Limitações e melhorias futuras
+
+- Os dados são armazenados em memória e não persistem após o reinício.
+- A chave de API é uma proteção didática, não um sistema completo de autenticação.
+- As rotas de consulta permanecem públicas neste laboratório.
+- Uma implantação real exigiria HTTPS, gestão segura de segredos, autorização apropriada, testes automatizados e configuração de produção.
+
+## Aviso
+
+Projeto educacional executado em ambiente local, com dados fictícios. Não foi concebido para uso direto em produção.

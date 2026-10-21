@@ -1,7 +1,27 @@
 
 from flask import Flask, jsonify, request
+from functools import wraps
+import os
 
 app = Flask(__name__)
+
+CHAVE_API = os.environ.get("API_KEY", "chave-lab-123")
+
+
+def requerer_api_key(funcao):
+    @wraps(funcao)
+    def verificar_chave(*args, **kwargs):
+        chave = request.headers.get("X-API-Key")
+
+        if chave != CHAVE_API:
+            return jsonify({
+                "erro": "Nao autorizado"
+            }), 401
+
+        return funcao(*args, **kwargs)
+
+    return verificar_chave
+
 
 filmes = [
     {
@@ -40,9 +60,8 @@ def consultar_filme(id):
 
     return jsonify({"erro": "Filme nao encontrado"}), 404
 
-
-
 @app.route("/filmes", methods=["POST"])
+@requerer_api_key
 def cadastrar_filme():
     dados = request.get_json(silent=True)
 
@@ -85,8 +104,8 @@ def cadastrar_filme():
 
     return jsonify(novo_filme), 201
 
-
 @app.route("/filmes/<int:id>", methods=["PUT"])
+@requerer_api_key
 def atualizar_filme(id):
     dados = request.get_json(silent=True)
 
@@ -123,9 +142,8 @@ def atualizar_filme(id):
 
     return jsonify({"erro": "Filme nao encontrado"}), 404
 
-
-
 @app.route("/filmes/<int:id>", methods=["DELETE"])
+@requerer_api_key
 def excluir_filme(id):
     for indice, filme in enumerate(filmes):
         if filme["id"] == id:
@@ -140,4 +158,4 @@ def excluir_filme(id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
